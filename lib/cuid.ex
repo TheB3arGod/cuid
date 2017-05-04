@@ -4,19 +4,24 @@ defmodule Cuid do
 
   Usage:
 
-      # Start the generator
-      {:ok, generator} = Cuid.start_link
+  # Start the generator
+  {:ok, generator} = Cuid.start_link
 
-      # Generate a new CUID
-      Cuid.generate(generator)
+  # Generate a new CUID
+  Cuid.generate(generator)
   """
 
   @doc """
   Generates and returns a new CUID.
   """
-  @spec generate(generator :: pid) :: String.t
-  def generate(generator) do
-    GenServer.call(generator, :generate)
+  @spec create_cuid(generator :: pid) :: String.t
+  def create_cuid(generator) do
+    GenServer.call(generator, :create_cuid)
+  end
+
+  @spec create_slug(generator :: pid) :: String.t
+  def create_slug(generator) do
+    GenServer.call(generator, :create_slug)
   end
 
   use GenServer
@@ -31,15 +36,27 @@ defmodule Cuid do
   ## Server callbacks
 
   def init(:ok) do
-    {:ok, %{:fingerprint => get_fingerprint, :count => 0}}
+    {:ok, %{:fingerprint => get_fingerprint(), :count => 0}}
   end
 
-  def handle_call(:generate, _, %{:fingerprint => fingerprint, :count => count} = state) do
+  def handle_call(:create_cuid, _, %{:fingerprint => fingerprint, :count => count} = state) do
     cuid = Enum.join([
-      "c", timestamp, format_counter(count), fingerprint, random_block, random_block
+      "c", timestamp(), format_counter(count), fingerprint, random_block(), random_block()
     ]) |> String.downcase
 
     {:reply, cuid, %{state | :count => count + 1}}
+  end
+
+  def handle_call(:create_slug, _,  %{:fingerprint => fingerprint, :count => count} = state) do
+    date = String.slice(timestamp(), -2..-1)
+    print = Enum.join([String.slice(fingerprint, 0..0), String.slice(fingerprint, -1..-1)])
+    rando = String.slice(random_block(), -2..-1)
+    counter = String.slice(format_counter(count), -4..-1)
+    slug = Enum.join([
+      date, counter, print, rando
+    ]) |> String.downcase()
+
+    {:reply, slug, %{state | :count => count + 1}}
   end
 
   ## Helpers
@@ -58,11 +75,11 @@ defmodule Cuid do
   defp timestamp do
     {mega, uni, micro} = :os.timestamp
     rem((mega * 1_000_000 + uni) * 1_000_000 + micro, @discrete_values * @discrete_values)
-    |> Integer.to_string @base
+    |> Integer.to_string(@base)
   end
 
   defp random_block do
-    :random.uniform(@discrete_values - 1)
+    :rand.uniform(@discrete_values - 1)
     |> Integer.to_string(@base)
     |> String.rjust(@block_size, ?0)
   end
