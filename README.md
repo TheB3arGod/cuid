@@ -15,13 +15,11 @@ Add Cuid as a dependency in your `mix.exs` file:
 defp deps do:
     [{:cuid, "~> 0.1.0"}]
 end
-```
-
-Run `mix deps.get` to fetch and compile Cuid. It works as a process
 
 ```elixir
 {:ok, pid} = Cuid.start_link
-Cuid.generate(pid)  # => ch72gsb320000udocl363eofy
+Cuid.create_cuid(pid)  # => ch72gsb320000udocl363eofy
+Cuid.create_slug(pid)  # => xi0033t1jo
 ```
 
 Each CUID is made by the following groups: `c - h72gsb32 - 0000 - udoc - l363eofy`
@@ -30,8 +28,15 @@ Each CUID is made by the following groups: `c - h72gsb32 - 0000 - udoc - l363eof
 * `h72gsb32` is a timestamp
 * `0000` is a counter
 * `udoc` is a fingerprint. The first two characters are based on the process ID and the next two are based on the hostname. This is the same method used in the [Node implementation](https://github.com/ericelliott/cuid/blob/master/src/node-fingerprint.js)
-* `l363eofy` random (uses `:random.uniform`)
+* `l363eofy` random (uses `:rand.uniform`)
 
+Each SLUG is made by the following groups: xi - 0033 - t - 1 - jo
+
+* `xi` are the last two characters of the stringified date
+* `0033` is the counter
+* `t` is the first character of the fingerprint
+* `i` is the last character of the fingerprint
+* `jo` random (uses `:rand.uniform`)
 
 ### TODOs
 
@@ -40,5 +45,6 @@ Each CUID is made by the following groups: `c - h72gsb32 - 0000 - udoc - l363eof
 
 ### Credit
 
-* Lucas Duailibe
 * Eric Elliott (author of [original JavaScript version](http://github.com/ericelliott/cuid))
+* Lucas Duailibe
+* Jonathan Lin
