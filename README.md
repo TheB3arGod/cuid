@@ -30,12 +30,12 @@ Each CUID is made by the following groups: `c - h72gsb32 - 0000 - udoc - l363eof
 * `udoc` is a fingerprint. The first two characters are based on the process ID and the next two are based on the hostname. This is the same method used in the [Node implementation](https://github.com/ericelliott/cuid/blob/master/src/node-fingerprint.js)
 * `l363eofy` random (uses `:rand.uniform`)
 
-Each SLUG is made by the following groups: xi - 0033 - t - 1 - jo
+Each SLUG is made by the following groups: `xi - 0033 - t - 1 - jo`
 
 * `xi` are the last two characters of the stringified date
 * `0033` is the counter
-* `t` is the first character of the fingerprint
-* `i` is the last character of the fingerprint
+* `t` is the first character of the above described fingerprint
+* `i` is the last character of the above described fingerprint
 * `jo` random (uses `:rand.uniform`)
 
 ### TODOs
